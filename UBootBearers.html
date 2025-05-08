@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U Boot Bearers RPG</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #e74c3c;
+            --text-color: #ecf0f1;
+            --bg-color: #121212;
+            --card-bg: #1e272e;
+            --header-bg: #192a3a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--text-color);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        nav {
+            background-color: var(--secondary-color);
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 0;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 0 15px;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: var(--accent-color);
+        }
+
+        main {
+            padding: 30px 0;
+        }
+
+        section {
+            margin-bottom: 40px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+            font-size: 1.8rem;
+        }
+
+        h3 {
+            color: var(--text-color);
+            margin: 25px 0 15px;
+            font-size: 1.5rem;
+        }
+
+        h4 {
+            color: var(--accent-color);
+            margin: 20px 0 10px;
+            font-size: 1.3rem;
+        }
+
+        h5,
+        h6 {
+            color: var(--text-color);
+            margin: 15px 0 10px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul,
+        ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid var(--secondary-color);
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            background-color: rgba(52, 73, 94, 0.1);
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(52, 73, 94, 0.2);
+        }
+
+        .monster-card {
+            background-color: rgba(44, 62, 80, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .monster-card h4 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .attributes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .attribute {
+            background-color: var(--secondary-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .skill-box {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 3px solid var(--accent-color);
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        code {
+            background-color: #2c3e50;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+
+        .top-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .top-btn.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .top-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            section {
+                padding: 15px;
+            }
+
+            nav ul {
+                justify-content: flex-start;
+            }
+
+            .attributes {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th,
+            td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+</html>
+
+<body>
+    <header>
+        <div class="container">
+            <h1>U Boot Bearers</h1>
+            <p class="subtitle">Um RPG futurista sem Mestre</p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#intro">Introdução</a></li>
+            <li><a href="#char-creation">Criação de Personagem</a></li>
+            <li><a href="#attributes">Atributos</a></li>
+            <li><a href="#combat">Combate</a></li>
+            <li><a href="#mechanics">Mecânicas</a></li>
+            <li><a href="#invaders">Invaders</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section id="intro">
+            <h2>Introdução ao RPG & Lore</h2>
+            <p>U Boot Bearers é um RPG futurista que não requer um mestre de jogo, pois é estruturado em ciclos de
+                missões e fases de preparação. Ambientado em um mundo pós-apocalíptico, os jogadores assumem o papel de
+                portadores de U Boot, que realizam missões predefinidas e lutam contra uma variedade de monstros que
+                farão de tudo para derrotar os jogadores.</p>
+
+            <h3>Lore</h3>
+            <p>A humanidade descobriu uma enorme reserva de petróleo que ocupa 70% do espaço entre o manto e o núcleo da
+                Terra. Essa fonte aparentemente infinita de energia levou a um tremendo crescimento econômico. No
+                entanto, logo causou uma desertificação generalizada, forçando a humanidade a se refugiar em cidades
+                flutuantes no mar. Para sobreviver, eles viajavam de uma base flutuante para outra para reabastecer seu
+                suprimento de petróleo.</p>
+
+            <p>Durante esse período, seres monstruosos apelidados de "Invasores" emergiram das reservas de petróleo,
+                causando estragos em tudo em seu caminho. Essas criaturas prosperam em profundidades extremas e possuem
+                uma resistência notável tanto a danos físicos quanto ao calor, tornando-as imunes a tiros e explosões.
+            </p>
+
+            <p>Em resposta a essa ameaça, a humanidade desenvolveu os U Boot — grandes braceletes que se prendem ao
+                pulso do usuário. Quando o combate começa, os U Boot se transformam na arma mais adequada para o
+                usuário. As armas podem variar de simples espadas a poderosos canhões de plasma. No entanto, elas
+                precisam ser recarregadas antes de cada confronto, pois seu suprimento de energia é limitado.</p>
+        </section>
+
+        <section id="char-creation">
+            <h2>Criação de Personagem e U Boot</h2>
+            <p>Primeiro, descreva seu personagem e o U Boot, tanto na forma de bracelete quanto na forma de arma. Em
+                seguida, distribua os pontos com base no alcance da sua arma. Se for uma arma de longo alcance, dedique
+                pontos à destreza para melhor mira. Se for uma arma corpo a corpo, concentre-se na força. Para armas
+                híbridas, você pode usar ambos os atributos adequadamente.</p>
+
+            <p>Os U-Boot se adapta ao personagem do usuário e pode assumir a forma de uma arma de longo, médio ou curto
+                alcance. Embora a arma em si deva ser criada pela sua criatividade, seu peso deve ser administrável,
+                pois deve ser algo que um personagem humano possa carregar.</p>
+
+            <p>Os U-Boot recarrega usando sua energia vital, se raramente sair da sua mão nunca precisará ser
+                recarregado. No entanto, se a U-Boot depender de projéteis disparados, ela consumirá pontos de energia
+                (PE) como munição e entra em estado de esgotamento por uma rodada para se recarregar.</p>
+        </section>
+
+        <section id="attributes">
+            <h2>Atributos</h2>
+            <p>Os atributos inicialmente devem ser distribuídos de 0-10 com 25 pontos no total.</p>
+
+            <h3>Atributos Primários</h3>
+            <ol>
+                <li>
+                    <strong>Força (STR):</strong>
+                    <ul>
+                        <li>Mede a força física do personagem.</li>
+                        <li>Aumenta o dano de armas corpo a corpo.</li>
+                        <li>Para o uso de armas pesadas/híbridas que exigem um alto nível de impacto.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Destreza (DEX):</strong>
+                    <ul>
+                        <li>Mede a mira/pontaria do personagem.</li>
+                        <li>Aumenta a precisão de armas de médio e longo alcance.</li>
+                        <li>Para o uso de armas leves/híbridas que exigem um alto nível de precisão.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Constituição (CON):</strong>
+                    <ul>
+                        <li>Aumenta a vida máxima (HP).</li>
+                        <li>Reduz o dano recebido de ataques físicos e energéticos.</li>
+                        <li>Aumenta a resistência a efeitos negativos (sangramento, empurrão, atordoamento).</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Agilidade (AGI):</strong>
+                    <ul>
+                        <li>Aumenta a precisão e a esquiva.</li>
+                        <li>Reduz o custo de pontos por ações rápidas, como ataques leves ou esquivas.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Inteligência (INT):</strong>
+                    <ul>
+                        <li>Define o AP (Action Points) disponível para cada turno.</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Atributos Secundários</h3>
+            <ol>
+                <li>
+                    <strong>HP (Health Points):</strong>
+                    <ul>
+                        <li>Baseado em CON.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>EP (Energy Points):</strong>
+                    <ul>
+                        <li>Usado para ações de armas de disparo de energia e habilidades cibernéticas.</li>
+                        <li>Baseado no tamanho da bateria:</li>
+                        <ul>
+                            <li>Pequeno (não requer força dá 100 EP ou 100 de munição).</li>
+                            <li>Médio (requer 5+ de força dá 500 EP ou 500 de munição).</li>
+                            <li>Grande (requer 8+ de força dá 1000 EP ou 1000 de munição).</li>
+                        </ul>
+                    </ul>
+                </li>
+                <li>
+                    <strong>AP (Action Points):</strong>
+                    <ul>
+                        <li>Define o número de ações que o jogador pode realizar por turno. Algumas ações consomem mais
+                            AP, como golpes/disparos pesados ou habilidades.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section id="combat">
+            <h2>Combate</h2>
+            <p>Ao iniciar uma missão o combate seguirá por turnos começando pelo jogador com maior agilidade e seguindo
+                em ordem decrescente. Ao tomar uma ação o jogador gastará AP que é definido em
+                <strong>atributos</strong>:
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ação</th>
+                        <th>AP gasto</th>
+                        <th>Vantagem</th>
+                        <th>Desvantagem</th>
+                        <th>Notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Andar</td>
+                        <td>1</td>
+                        <td>Gasta menos AP do que correr</td>
+                        <td>Inimigo pode te alcançar</td>
+                        <td>Movimenta uma unidade padrão (3 métros). Ideal para reposicionamento leve.</td>
+                    </tr>
+                    <tr>
+                        <td>Correr</td>
+                        <td>2</td>
+                        <td>Não é alcançado por inimigos mais lentos</td>
+                        <td>Inimigo só te alcança caso seja mais rápido do que você</td>
+                        <td>Movimenta o dobro da distância de Andar, mas consome mais AP.</td>
+                    </tr>
+                    <tr>
+                        <td>Esquivar</td>
+                        <td>1</td>
+                        <td>Custa menos AP do que defender</td>
+                        <td>Pode falhar e receber o dano inteiro, e depende de AGI</td>
+                        <td>Custo baixo, mas depende inteiramente da AGI para sucesso.</td>
+                    </tr>
+                    <tr>
+                        <td>Ataque leve</td>
+                        <td>2</td>
+                        <td>Diminui as chances do inimigo Esquivar, Defender, Defletir ou Contra-atacar</td>
+                        <td>Menos dano</td>
+                        <td>Rápido, pode ser combinado com outra ação. Menos dano que o pesado.</td>
+                    </tr>
+                    <tr>
+                        <td>Ataque pesado</td>
+                        <td>3</td>
+                        <td>Alto dano</td>
+                        <td>chances normais do inimigo Esquivar, Defender, Defletir ou Contra-atacar</td>
+                        <td>Maior dano, mas consome mais AP. Risco maior se errar.</td>
+                    </tr>
+                    <tr>
+                        <td>Defender</td>
+                        <td>2</td>
+                        <td>Garantidamente reduz o dano pela metade desde que não esteja em estado critico</td>
+                        <td>Não evita danos totalmente</td>
+                        <td>Pode ser utilizada várias vezes se tiver AP sobrando.</td>
+                    </tr>
+                    <tr>
+                        <td>Defletir (parry)</td>
+                        <td>2</td>
+                        <td>Causa atordoamento no inimigo se tiver sucesso.</td>
+                        <td>Toma o dano inteiro caso falhe</td>
+                        <td>Deixa o inimigo exposto para o próximo ataque</td>
+                    </tr>
+                    <tr>
+                        <td>Contra-atacar</td>
+                        <td>4</td>
+                        <td>Parry + Ataque leve em um só</td>
+                        <td>Toma o dano inteiro caso falhe</td>
+                        <td>Combina Parry + Ataque leve.</td>
+                    </tr>
+                    <tr>
+                        <td>Ação genérica</td>
+                        <td>1-3</td>
+                        <td>Qualquer ação que não se encaixe nas anteriores</td>
+                        <td></td>
+                        <td>Depende da complexidade da ação. Usado para improvisações.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Observações:</h4>
+            <ul>
+                <li>
+                    <strong>Andar vs. Correr:</strong>
+                    <ul>
+                        <li>Se o jogador precisar se reposicionar sem gastar muito AP, Andar é a opção ideal.</li>
+                        <li>Correr é útil para escapar de ataques pesados ou alcançar cobertura rapidamente.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Esquivar vs. Defender:</strong>
+                    <ul>
+                        <li>Esquivar é mais barato, mas depende de AGI e pode falhar completamente.</li>
+                        <li>Defender garante redução de dano, mas não evita completamente.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Ataque Leve vs. Pesado:</strong>
+                    <ul>
+                        <li>Ataque leve pode ser útil para jogadores rápidos, permitindo múltiplos golpes no mesmo
+                            turno.</li>
+                        <li>Ataque pesado é mais eficaz contra alvos com alta defesa, mas consome mais AP.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Defletir vs. Contra-ataque:</strong>
+                    <ul>
+                        <li>Defletir é um movimento arriscado, mas pode atordoar o inimigo.</li>
+                        <li>Contra-atacar é ainda mais arriscado, mas combina um Parry com um ataque rápido.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section id="mechanics">
+            <h2>Mecânicas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Condição</th>
+                        <th>Efeito</th>
+                        <th>Duração</th>
+                        <th>Como Aplicar</th>
+                        <th>Como Resistir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Empurrão</strong></td>
+                        <td>Move o alvo para trás uma distância fixa (ex.: 2-3 metros) e interrompe a ação.</td>
+                        <td>1 turno</td>
+                        <td>Ataque Pesado, Habilidades específicas</td>
+                        <td>CON ou DEX para resistir</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Puxão</strong></td>
+                        <td>Atrai o alvo para perto, ideal para engajar um inimigo distante.</td>
+                        <td>Imediato</td>
+                        <td>Armas com correntes, ganchos, habilidades</td>
+                        <td>STR para resistir</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Travar</strong></td>
+                        <td>Impede o alvo de se mover, mas ele ainda pode atacar.</td>
+                        <td>1-2 turnos</td>
+                        <td>Habilidades de imobilização, ataques críticos</td>
+                        <td>CON ou AGI para resistir</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Atordoamento</strong></td>
+                        <td>Impede qualquer ação durante o turno afetado.</td>
+                        <td>1 turno</td>
+                        <td>Defletir bem-sucedido, ataques pesados</td>
+                        <td>CON para resistir</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Silenciamento</strong></td>
+                        <td>Impede o uso de habilidades que consomem energia (EP).</td>
+                        <td>1-3 turnos</td>
+                        <td>Armas de pulso eletromagnético</td>
+                        <td>ENG ou DEX para resistir</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cegueira</strong></td>
+                        <td>Reduz drasticamente a precisão (ACC) do alvo.</td>
+                        <td>2 turnos</td>
+                        <td>Granadas de luz, habilidades</td>
+                        <td>AGI para resistir</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sangramento</strong></td>
+                        <td>Causa dano fixo ao final de cada turno. Pode acumular.</td>
+                        <td>3 turnos</td>
+                        <td>Ataques que cortam ou perfuram profundamente</td>
+                        <td>CON para reduzir a duração</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Queimadura</strong></td>
+                        <td>Causa dano fixo e inibe a regeneração de EP.</td>
+                        <td>2 turnos</td>
+                        <td>Armas de plasma, granadas incendiárias</td>
+                        <td>CON para reduzir o dano</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Corrosão</strong></td>
+                        <td>Reduz ARM em um valor fixo e causa dano fixo.</td>
+                        <td>3 turnos</td>
+                        <td>Armas ácidas, habilidades específicas</td>
+                        <td>CON para reduzir o efeito</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Interações e Sinergias:</h4>
+            <ul>
+                <li>
+                    <strong>Combos com Empurrão:</strong>
+                    <p>Um empurrão bem-sucedido pode jogar o inimigo contra um obstáculo, causando dano adicional. (dado
+                        de vantagem)</p>
+                </li>
+                <li>
+                    <strong>Atordoamento + Sangramento:</strong>
+                    <p>Atordoar um alvo já sangrando pode acelerar o dano, pois ele não poderá usar uma ação de defesa
+                        para estancar o sangramento. (dado de vantagem)</p>
+                </li>
+                <li>
+                    <strong>Silenciamento + Cegueira:</strong>
+                    <p>Um inimigo cego e silenciado terá dificuldade em usar habilidades e ataques de longo alcance,
+                        sendo um alvo fácil para ataques pesados. (dado de vantagem)</p>
+                </li>
+            </ul>
+        </section>
+
+        <section id="invaders">
+            <h2>Invaders</h2>
+            <p>Lista de monstros e seus atributos:</p>
+
+            <div class="monster-card">
+                <h4>1. Gromoth</h4>
+                <p>Um quadrúpede maciço coberto por chifres e espinhos. Sua pele é extremamente dura, semelhante a uma
+                    rocha compacta. Gromoth é lento, mas quando inicia uma investida, causa destruição em massa.</p>
+
+                <ul>
+                    <li><strong>Altura Média:</strong> 2,5 metros na cernelha</li>
+                    <li><strong>Peso Médio:</strong> 1200 kg</li>
+                </ul>
+
+                <h5>Atributos:</h5>
+                <div class="attributes">
+                    <span class="attribute">STR: 8 (Capaz de esmagar inimigos com facilidade)</span>
+                    <span class="attribute">DEX: 2 (Movimento lento, mas investidas devastadoras)</span>
+                    <span class="attribute">CON: 10 (Sua pele é quase impenetrável, exceto por fissuras nos
+                        espinhos)</span>
+                    <span class="attribute">INT: 1 (Pouco AP, ações limitadas por turno)</span>
+                    <span class="attribute">AGI: 1 (Incapaz de esquivar ataques)</span>
+                </div>
+
+                <h5>Habilidades Especiais:</h5>
+                <div class="skill-box">
+                    <p><strong>Investida Brutal:</strong> Investida causando <strong>Empurrão</strong> e dano massivo em linha reta.
+                        Custo: 4 AP</p>
+                    <p><strong>Espinhos Reativos:</strong> Quando recebe um ataque corpo a corpo, causa dano ao atacante.</p>
+                </div>
+            </div>
+            <div class="monster-card">
+                <h4>2. Skolwarg</h4>
+                <p>Uma criatura humanoide gigantesca coberta de pelos densos e emaranhados. Não possui olhos ou ouvidos, mas seu olfato é tão apurado que pode rastrear um alvo com precisão.</p>
+                <ul>
+                    <li><strong>Altura Média:</strong> 3 metros</li>
+                    <li><strong>Peso Médio:</strong> 600 kg</li>
+                </ul>
+
+                <h5>Atributos:</h5>
+                <div class="attributes">
+                    <span class="attribute">STR: 6 (Ataques físicos poderosos com as garras)</span>
+                    <span class="attribute">DEX: 4 (Rápido em terrenos abertos, mas limitado em espaços
+                        confinados)</span>
+                    <span class="attribute">CON: 7 (Pelos espessos absorvem dano físico, mas são inflamáveis)</span>
+                    <span class="attribute">INT: 2 (Um pouco mais de AP, permite usar habilidades de
+                        rastreamento)</span>
+                    <span class="attribute">AGI: 3 (Boa capacidade de esquiva devido aos reflexos aguçados)</span>
+                </div>
+
+                <h5>Habilidades Especiais:</h5>
+                <div class="skill-box">
+                    <p><strong>Rugido Sônico:</strong> Causa cegueira por 1 turno. Custo: 3 AP</p>
+                    <p><strong>Rastreamento Olfativo:</strong> Ganha precisão adicional contra alvos feridos.</p>
+                </div>
+            </div>
+            <div class="monster-card">
+                <h4>3. Slashwraith</h4>
+                <p>Um monstro humanoide alto e magro, sem pelos e com garras afiadas. Sua pele é extremamente fina e fácil de
+                    cortar, mas é um dos monstros mais rápidos já registrados.</p>
+        
+                <ul>
+                    <li><strong>Altura Média:</strong> 2,8 metros</li>
+                    <li><strong>Peso Médio:</strong> 300 kg</li>
+                </ul>
+        
+                <h5>Atributos:</h5>
+                <div class="attributes">
+                    <span class="attribute">STR: 5 (Garras afiadas, mas sem muita força bruta)</span>
+                    <span class="attribute">DEX: 9 (Incrivelmente ágil, ataques rápidos e consecutivos)</span>
+                    <span class="attribute">CON: 2 (Sua pele é quase um tecido fino, muito vulnerável a ataques físicos)</span>
+                    <span class="attribute">INT: 3 (Mais AP, permitindo múltiplas ações por turno)</span>
+                    <span class="attribute">AGI: 7 (Pode executar múltiplas esquivas em um turno)</span>
+                </div>
+        
+                <h5>Habilidades Especiais:</h5>
+                <div class="skill-box">
+                    <p><strong>Frenesi de Cortes:</strong> Realiza 3 ataques leves em um único turno. Custo: 3 AP</p>
+                    <p><strong>Salto Sombrio:</strong> Move-se para um ponto até 10 metros de distância sem ser detectado.
+                        Custo: 2
+                        AP</p>
+                </div>
+            </div>
+            <div class="monster-card">
+                <h4>4. Spitfang</h4>
+                <p>Uma criatura pequena e compacta, mas extremamente musculosa. Suas asas são cobertas de espinhos, e seu corpo
+                    é
+                    adaptado para voar rapidamente e cuspir ácido corrosivo.</p>
+        
+                <ul>
+                    <li><strong>Altura Média:</strong> 1 metro (envergadura de asas de 3 metros)</li>
+                    <li><strong>Peso Médio:</strong> 80 kg</li>
+                </ul>
+        
+                <h5>Atributos:</h5>
+                <div class="attributes">
+                    <span class="attribute">STR: 4 (Ataques de garra fortes, mas curtos)</span>
+                    <span class="attribute">DEX: 8 (Voa rapidamente e pode realizar ataques aéreos)</span>
+                    <span class="attribute">CON: 5 (Seu corpo é resistente ao calor, mas vulnerável a projéteis)</span>
+                    <span class="attribute">INT: 4 (Pode realizar várias ações em um único turno, ideal para combate
+                        aéreo)</span>
+                    <span class="attribute">AGI: 7 (Capaz de realizar manobras aéreas complexas)</span>
+                </div>
+        
+                <h5>Habilidades Especiais:</h5>
+                <div class="skill-box">
+                    <p><strong>Cuspida Ácida:</strong> Aplica corrosão a um alvo. Custo: 3 AP</p>
+                    <p><strong>Ataque Mergulhante:</strong> Ataque pesado, mas aumenta o risco de contra-ataque. Custo: 2 AP</p>
+                </div>
+            </div>
+            <div class="monster-card">
+                <h4>5. Bloodtick</h4>
+                <p>Uma aberração grotesca, parecida com um carrapato gigante, com pernas mecânicas e uma cauda em forma de
+                    seringa
+                    que utiliza para sugar sangue das vítimas.</p>
+        
+                <ul>
+                    <li><strong>Altura Média:</strong> 1,5 metros</li>
+                    <li><strong>Peso Médio:</strong> 200 kg</li>
+                </ul>
+        
+                <h5>Atributos:</h5>
+                <div class="attributes">
+                    <span class="attribute">STR: 8 (Ataques físicos fortes e constantes)</span>
+                    <span class="attribute">DEX: 5 (Médio, mas pode acelerar ao se fixar em um alvo)</span>
+                    <span class="attribute">CON: 4 (Resistente, mas sua carapaça possui pontos vulneráveis)</span>
+                    <span class="attribute">INT: 5 (Alto AP, permitindo ações múltiplas e habilidades de drenagem)</span>
+                    <span class="attribute">AGI: 6 (Rapidez moderada, mas pode prender-se ao alvo)</span>
+                </div>
+        
+                <h5>Habilidades Especiais:</h5>
+                <div class="skill-box">
+                    <p><strong>Sugamento de Sangue:</strong> Puxa o alvo (Causa Puxão) Cura-se em 50% do dano causado. Custo: 2
+                        AP
+                    </p>
+                    <p><strong>Implante de Parasita:</strong> Se prender no alvo (causa <strong>Travar</strong>), causando dano
+                        contínuo por 2 turnos. Custo: 3 AP</p>
+                </div>
+            </div>
+
+            <h3>Ações dos Monstros</h3>
+            <p>Role 1 D8 e o numero que cair será a ação que o monstro tomará. Obs o monstro sempre ataque quem está
+                mais perto, caso duas pessoas ou mais estejam na mesma distancia faz-se um sorteio com dado</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Numero</th>
+                        <th>Ação</th>
+                        <th>AP Gasto</th>
+                        <th>Efeito</th>
+                        <th>Monstros que Usam</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><strong>Andar</strong></td>
+                        <td>1</td>
+                        <td>Move-se uma unidade padrão (ex.: 3 metros).</td>
+                        <td>Todos</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><strong>Correr</strong></td>
+                        <td>2</td>
+                        <td>Move-se o dobro da distância padrão.</td>
+                        <td>Todos</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><strong>Ataque Leve</strong></td>
+                        <td>2</td>
+                        <td>Dano físico padrão. Pode ser esquivado.</td>
+                        <td>Todos</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><strong>Ataque Pesado</strong></td>
+                        <td>3</td>
+                        <td>Dano elevado, mas custo maior de AP.</td>
+                        <td>Gromoth, Skolwarg, Slashwraith</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><strong>Esquivar</strong></td>
+                        <td>1</td>
+                        <td>Evita um ataque. Requer AGI alta.</td>
+                        <td>Spitfang, Slashwraith, Bloodtick</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><strong>Defender</strong></td>
+                        <td>1</td>
+                        <td>Reduz o dano recebido em 50%.</td>
+                        <td>Gromoth, Skolwarg</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td><strong>Contra-ataque</strong></td>
+                        <td>4</td>
+                        <td>Parry + Ataque Leve. Custo alto de AP.</td>
+                        <td>Slashwraith, Skolwarg</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td><strong>Limpeza</strong></td>
+                        <td>4</td>
+                        <td>Retira efeito negativos como sangramento ou queimadura.</td>
+                        <td>Spitfang, Skolwarg, Slashwraith, Bloodtick</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Ações Específicas</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Monstro</th>
+                        <th>Habilidade 1</th>
+                        <th>AP Gasto</th>
+                        <th>Habilidade 2</th>
+                        <th>AP Gasto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Gromoth</strong></td>
+                        <td>Investida Brutal</td>
+                        <td>4</td>
+                        <td>Espinhos Reativos (Passivo)</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Skolwarg</strong></td>
+                        <td>Rugido Sônico</td>
+                        <td>3</td>
+                        <td>Rastreamento Olfativo</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slashwraith</strong></td>
+                        <td>Frenesi de Cortes</td>
+                        <td>3</td>
+                        <td>Salto Sombrio</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Spitfang</strong></td>
+                        <td>Cuspida Ácida</td>
+                        <td>3</td>
+                        <td>Ataque Mergulhante</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bloodtick</strong></td>
+                        <td>Sugamento de Sangue</td>
+                        <td>2</td>
+                        <td>Implante de Parasita</td>
+                        <td>3</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <button id="topBtn" class="top-btn" title="Voltar ao topo">↑</button>
+
+    <script>
+        // Botão de voltar ao topo
+        const topBtn = document.getElementById('topBtn');
+
+        window.onscroll = function () {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                topBtn.classList.add('visible');
+            } else {
+                topBtn.classList.remove('visible');
+            }
+        };
+
+        topBtn.addEventListener('click', function () {
+            document.body.scrollTop = 0; // Para Safari
+            document.documentElement.scrollTop = 0; // Para Chrome, Firefox, IE e Opera
+        });
+
+        // Navegação suave para ancoras
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+
+                window.scrollTo({
+                    top: targetSection.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
